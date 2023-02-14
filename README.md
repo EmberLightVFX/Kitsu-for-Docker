@@ -1,6 +1,6 @@
 # Kitsu for Docker
 
-**Docker compose for [Kitsu](https://kitsu.cg-wire.com/) and [Zou](https://zou.cg-wire.com/)**
+**Docker compose for [Kitsu](https://kitsu.cg-wire.com/)**
 
 ### *This readme contains info for both Kitsu-for-Docker and Zou-for-Docker as it's most likely you wish to run both*
 
@@ -24,7 +24,8 @@ Place the [db/pg_ctl.conf](db/pg_ctl.conf) at `./db/pg_ctl.conf` from your docke
 # Usage
 
 On first run the installation will download your wanted Zou version.
-It will then initialize and populate the database and create a `initialized.txt` file in your previews folder. This is done to make sure the initializion is done only ones. Don't delete this file.
+It will then initialize and populate the database and create a `initialized.txt` file in your previews folder. This is done to make sure the initializion is done only ones.
+If something goes wrong on your first launch, delete this file to re-initialize the database, else **never delete this file!**
 A default admin account will also be created:
 
 - login: admin@example.com
