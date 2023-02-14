@@ -40,12 +40,12 @@ You can run `zou --help` to see all available commands.
 # For development
 
 This project isn't built for development of Kitsu and Zou.
-For that I highly recommend Mathieu Bouzard's version that you can find here: [https://gitlab.com/mathbou/docker-cgwire/]
+For that I highly recommend Mathieu Bouzard's version that you can find here: https://gitlab.com/mathbou/docker-cgwire/
 
 
 # About authors
 
-This project is based on Mathieu Bouzard's work as a base. You'll find his project at [https://gitlab.com/mathbou/docker-cgwire/]
+This project is based on Mathieu Bouzard's work as a base. You'll find his project at https://gitlab.com/mathbou/docker-cgwire/
 
 Those Dockerfiles are based on CG Wire work, a company based in France. They help small
 to midsize CG studios to manage their production and build a pipeline
