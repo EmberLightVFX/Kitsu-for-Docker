@@ -14,7 +14,7 @@ services:
       - .env
     restart: unless-stopped
     volumes:
-      - '/volume1/docker/kitsu/kitsu:/opt/kitsu'
+      - 'kitsu:/opt/kitsu'
     networks:
       - cgwire
 
@@ -24,8 +24,8 @@ services:
     depends_on:
       - db
     volumes:
-      - '/volume1/docker/kitsu/previews:/opt/zou/previews'
-      - '/volume1/docker/kitsu/tmp:/tmp/zou'
+      - 'previews:/opt/zou/previews'
+      - 'tmp:/tmp/zou'
     env_file:
       - .env
     restart: unless-stopped
@@ -51,8 +51,8 @@ services:
     container_name: cgwire-zou-jobs
     image: emberlightvfx/zou-for-docker:latest
     volumes:
-      - '/volume1/docker/kitsu/previews:/opt/zou/previews'
-      - '/volume1/docker/kitsu/tmp:/tmp/zou'
+      - 'previews:/opt/zou/previews'
+      - 'tmp:/tmp/zou'
     env_file:
       - .env
     restart: unless-stopped
@@ -64,8 +64,8 @@ services:
     container_name: cgwire-db-12
     image: postgres:12-alpine
     volumes:
-      - '/volume1/docker/kitsu/db:/var/lib/postgresql/data'
-      - '/volume1/docker/kitsu/db/pg_ctl.conf:/etc/postgresql/12/main/pg_ctl.conf:ro'
+      - 'db:/var/lib/postgresql/data'
+      - ./db/pg_ctl.conf:/etc/postgresql/12/main/pg_ctl.conf:ro
     env_file:
       - .env
     restart: unless-stopped
@@ -76,10 +76,22 @@ services:
     container_name: cgwire-redis
     image: redis:alpine
     volumes:
-      - '/volume1/docker/kitsu/redis:/data'
+      - 'redis:/data'
     restart: unless-stopped
     networks:
       - cgwire
+
+volumes:
+  db:
+    name: zou-db-12
+  redis:
+    name: cgwire-redis
+  previews:
+    name: cgwire-previews
+  tmp:
+    name: cgwire-tmp
+  kitsu:
+    name: cgwire-kitsu
 
 networks:
   cgwire:
