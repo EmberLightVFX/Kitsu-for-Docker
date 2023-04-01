@@ -32,9 +32,7 @@ services:
     networks:
       - cgwire
     command: >
-      sh -c "/download_zou.sh &&
-      /init_zou.sh &&
-      gunicorn --error-logfile - --access-logfile - -w 3 -k gevent -b :5000 zou.app:app"
+      sh -c "/init_zou.sh && gunicorn --error-logfile - --access-logfile - -w 3 -k gevent -b :5000 zou.app:app"
 
   zou-event:
     container_name: cgwire-zou-event
@@ -47,8 +45,7 @@ services:
     networks:
       - cgwire
     command: >
-      sh -c "/download_zou.sh &&
-      gunicorn --error-logfile - --access-logfile - -w 1 -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -b :5001 zou.event_stream:app"
+      sh -c "gunicorn --error-logfile - --access-logfile - -w 1 -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -b :5001 zou.event_stream:app"
 
   zou-jobs:
     container_name: cgwire-zou-jobs
@@ -62,8 +59,7 @@ services:
     networks:
       - cgwire
     command: >
-      sh -c "/download_zou.sh &&
-      rq worker -c zou.job_settings"
+      sh -c "rq worker -c zou.job_settings"
 
   db:
     container_name: cgwire-db-12

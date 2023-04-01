@@ -1,15 +1,20 @@
-FROM nginx:alpine
+FROM nginx:alpine as buildStage
 
 LABEL maintainer="Jacob Danell <jacob@emberlight.se>"
 
-RUN apk add git bash curl jq
+USER root
 
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
+WORKDIR /opt
+
+RUN apk add --no-cache --virtual .build-deps git
+
+ARG KITSU_VERSION
+
+RUN git clone -b "${KITSU_VERSION}-build" --single-branch --depth 1 https://github.com/cgwire/kitsu\
+    && apk --purge del .build-deps
+
+
+FROM nginx:alpine as squashStage
+COPY --from=buildStage / /
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./launch_kitsu.sh /launch_kitsu.sh
-
-RUN mkdir /opt/kitsu
-
-CMD /launch_kitsu.sh

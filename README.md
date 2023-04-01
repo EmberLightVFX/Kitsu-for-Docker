@@ -5,13 +5,6 @@
 ### *This readme contains info for both Kitsu-for-Docker and Zou-for-Docker as it's most likely you wish to run both*
 
 
-# Info about this dockerfile
-
-This dockerfile will automatically download Kitsu of the version mentioned in the .env file.
-To update Kitsu to another version, simply modify the .env and run docker-compose up.
-If you have set the .env to get the latest version you can simply restart the container and if there is a new version the container will download it for you.
-
-
 # Getting Started
 
 Check out the [docker-compose.yaml](docker-compose.yaml) file in the repo for the setup.
@@ -36,6 +29,11 @@ A default admin account will also be created:
 
 If you need to run any specific zou commands, open the terminal of cgwire-zou-app and enter your command.
 You can run `zou --help` to see all available commands.
+
+
+# Update database schema
+
+If you need to update the zou database schema, open the terminal of cgwire-zou-app and enter `./upgrade_zou.sh`.
 
 
 # For development

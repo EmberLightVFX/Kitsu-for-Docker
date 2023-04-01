@@ -6,11 +6,21 @@ on:
 jobs:
   check-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
 
-      - uses: octokit/request-action@v2.x
+      - name: Fetch latest kitsu release data
+        uses: octokit/request-action@v2.x
         id: get_latest_release
         with:
           route: GET /repos/{owner}/{repo}/releases/latest
@@ -19,13 +29,46 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - name: All data
-        run: "echo data: '${{ steps.get_latest_release.outputs.data }}'"
-
       - name: Extract tag_name from JSON response
         run: |
           # Extract tag_name using jq and store it in an environment variable
-          export TAG_NAME=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.tag_name')
+          export KITSU_VERSION=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.tag_name')
+          echo "KITSU_VERSION=$KITSU_VERSION" >> $GITHUB_ENV
 
           # Print the tag_name for verification
-          echo "tag_name: $TAG_NAME"
+          echo "Latest kitsu version: $KITSU_VERSION"
+
+      - name: Compare to latest version
+        run: |
+          # Get each variable
+          LATEST_VERSION=$(cat latest-version.txt)
+          if [ "$LATEST_VERSION" != "$KITSU_VERSION" ]; then
+            # Write the latest version to .txt
+            echo "Updating latest-version.txt to $KITSU_VERSION"
+            echo "$KITSU_VERSION" > latest-version.txt
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add latest-version.txt
+            git commit -m "Update latest-version.txt to $KITSU_VERSION"
+            git push
+            # Build docker image
+            echo "New version found! $KITSU_VERSION"
+            echo "Building new docker image"
+            echo "BUILD=True" >> $GITHUB_ENV
+          else
+            echo "No update found"
+            echo "BUILD=False" >> $GITHUB_ENV
+          fi
+
+      - name: Trigger docker-publish.yml
+        run: |
+          if [[ "${{ env.BUILD }}" == "True" ]]; then
+            echo "BUILD is set to True"
+            curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              -H "Accept: application/vnd.github.everest-preview+json" \
+              https://api.github.com/repos/EmberLightVFX/Kitsu-for-Docker/dispatches \
+              --data '{"event_type": "docker-publish", "client_payload": {"KITSU_VERSION": "${{ env.KITSU_VERSION }}"}}'
+          else
+            echo "BUILD is not set to True"
+          fi
