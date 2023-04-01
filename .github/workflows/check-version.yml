@@ -1,0 +1,26 @@
+name: Check Latest Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get latest release
+        id: latest_release
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/{owner}/{repo}/releases/latest
+          owner: cgwire
+          repo: kitsu
+          headers: |
+            {
+              "Accept": "application/vnd.github.v3+json"
+            }
+
+      - name: Display latest release tag name
+        run: echo ${{ steps.latest_release.outputs.tag_name }}
