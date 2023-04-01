@@ -20,4 +20,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - run: "echo data: '${{ steps.get_latest_release.outputs.data }}'"
-      - run: "echo tag_name: '${{ fromJson(steps.create_check_run.outputs.data).tag_name }}'""
+      - run: "echo tag_name: '${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}'""
