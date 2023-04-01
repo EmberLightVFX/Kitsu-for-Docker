@@ -20,4 +20,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - run: "echo data: '${{ steps.get_latest_release.outputs.data }}'"
-      - run: "echo tag_name: '${{ fromJson(steps.get_latest_release.outputs.data).tag_name }}'""
+      - run: |
+        tag_name=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.tag_name')
+        echo "The latest release tag is: $tag_name"
