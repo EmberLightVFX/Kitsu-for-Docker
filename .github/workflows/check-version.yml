@@ -12,15 +12,17 @@ jobs:
 
       - name: Get latest release
         id: latest_release
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@v2.1.7
         with:
           route: GET /repos/{owner}/{repo}/releases/latest
           owner: cgwire
           repo: kitsu
-          headers: |
-            {
-              "Accept": "application/vnd.github.v3+json"
-            }
+          env:
+            GITHUB_TOKEN: ${{ secrets.PAT }}
+          #headers: |
+          #  {
+          #    "Accept": "application/vnd.github.v3+json"
+          #  }
 
       - name: Display latest release tag name
         run: echo ${{ steps.latest_release.outputs.tag_name }}
