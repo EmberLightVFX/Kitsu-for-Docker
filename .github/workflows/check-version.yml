@@ -10,19 +10,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get latest release
-        id: latest_release
-        uses: octokit/request-action@v2.1.7
+      - uses: octokit/request-action@v2.x
+        id: get_latest_release
         with:
           route: GET /repos/{owner}/{repo}/releases/latest
           owner: cgwire
           repo: kitsu
-          env:
-            GITHUB_TOKEN: ${{ secrets.PAT }}
-          #headers: |
-          #  {
-          #    "Accept": "application/vnd.github.v3+json"
-          #  }
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - name: Display latest release tag name
-        run: echo ${{ steps.latest_release.outputs.tag_name }}
+      - run: "echo latest release: '${{ steps.get_latest_release.outputs.data }}'"
