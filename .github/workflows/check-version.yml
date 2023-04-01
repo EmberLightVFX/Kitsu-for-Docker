@@ -21,5 +21,5 @@ jobs:
 
       - run: "echo data: '${{ steps.get_latest_release.outputs.data }}'"
       - run: |
-        tag_name=${{ steps.get_latest_release.outputs.data }}
+        tag_name=$(${{ steps.get_latest_release.outputs.data }})
         echo "The latest release tag is: $tag_name"
