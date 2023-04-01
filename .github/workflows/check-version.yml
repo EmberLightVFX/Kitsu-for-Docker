@@ -19,4 +19,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - run: "echo latest release: '${{ steps.get_latest_release.outputs.tag_name }}'"
+      - run: "echo latest release: '${{ steps.get_latest_release.outputs.data.tag_name }}'"
