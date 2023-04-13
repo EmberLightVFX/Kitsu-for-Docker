@@ -35,6 +35,11 @@ jobs:
         run: |
           # Extract tag_name using jq and store it in an environment variable
           export KITSU_VERSION=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.tag_name')
+          
+          if [[ ${KITSU_VERSION:0:1} == "v" ]]; then
+            KITSU_VERSION=${KITSU_VERSION:1}
+          fi
+          
           echo "KITSU_VERSION=$KITSU_VERSION" >> $GITHUB_ENV
 
           # Print the tag_name for verification
