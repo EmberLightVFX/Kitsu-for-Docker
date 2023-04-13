@@ -13,8 +13,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-    volumes:
-      - 'kitsu:/opt/kitsu'
     networks:
       - cgwire
 
@@ -39,6 +37,9 @@ services:
     image: ghcr.io/emberlightvfx/zou-for-docker:latest
     depends_on:
       - redis
+    volumes:
+      - 'previews:/opt/zou/previews'
+      - 'tmp:/tmp/zou'
     env_file:
       - .env
     restart: unless-stopped
