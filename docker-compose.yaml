@@ -69,6 +69,8 @@ services:
       - "7700:7700"
     volumes:
       - 'meili_data:/meili_data'
+    env_file:
+      - .env
     restart: unless-stopped
     networks:
       - cgwire
