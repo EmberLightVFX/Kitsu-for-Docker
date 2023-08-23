@@ -62,6 +62,17 @@ services:
     command: >
       sh -c "rq worker -c zou.job_settings"
 
+  meilisearch:
+    container_name: cgwire-meilisearch
+    image: getmeili/meilisearch:v1.3.1
+    ports:
+      - "7700:7700"
+    volumes:
+      - 'meili_data:/meili_data'
+    restart: unless-stopped
+    networks:
+      - cgwire
+
   db:
     container_name: cgwire-db-12
     image: postgres:12-alpine
@@ -88,6 +99,8 @@ volumes:
     name: zou-db-12
   redis:
     name: cgwire-redis
+  meili_data:
+    name: cgwire-meili_data
   previews:
     name: cgwire-previews
   tmp:
