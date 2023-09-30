@@ -30,7 +30,7 @@ services:
     networks:
       - cgwire
     command: >
-      sh -c "/init_zou.sh && gunicorn --error-logfile - --access-logfile - -w 3 -k gevent -b :5000 zou.app:app"
+      sh -c "/init_zou.sh && /upgrade_zou.sh && gunicorn --error-logfile - --access-logfile - -w 3 -k gevent -b :5000 zou.app:app"
 
   zou-event:
     container_name: cgwire-zou-event
