@@ -10,7 +10,7 @@ RUN apk add --no-cache --virtual .build-deps git
 
 ARG KITSU_VERSION
 
-RUN git clone -b "v${KITSU_VERSION}" --single-branch --depth 1 https://github.com/cgwire/kitsu\
+RUN git clone -b "${KITSU_VERSION}-build" --single-branch --depth 1 https://github.com/cgwire/kitsu\
     && apk --purge del .build-deps
 
 
