@@ -1,0 +1,52 @@
+version: '3.8'
+
+# Docker Compose override for 2FA enforcement
+#
+# Usage:
+#   docker-compose -f docker-compose.yaml -f docker-compose.2fa.yaml up -d
+#
+# Or create a .env file with:
+#   COMPOSE_FILE=docker-compose.yaml:docker-compose.2fa.yaml
+#
+# This file adds 2FA enforcement capabilities to your Kitsu/Zou deployment
+
+services:
+  zou-app:
+    volumes:
+      # Mount 2FA enforcement scripts (with :Z for exclusive SELinux access)
+      - ./scripts/enforce_2fa.py:/opt/zou/scripts/enforce_2fa.py:Z
+      - ./scripts/check_2fa_on_startup.sh:/opt/zou/scripts/check_2fa_on_startup.sh:Z
+      - ./scripts/install_dependencies.sh:/opt/zou/scripts/install_dependencies.sh:Z
+      - ./scripts/zou_entrypoint_wrapper.sh:/opt/zou/scripts/zou_entrypoint_wrapper.sh:Z
+      - ./scripts/2fa_cron_check.sh:/opt/zou/scripts/2fa_cron_check.sh:Z
+      - ./scripts/zou_2fa_middleware.py:/opt/zou/scripts/zou_2fa_middleware.py:Z
+      - ./scripts/zou_app_wrapper.py:/opt/zou/scripts/zou_app_wrapper.py:Z
+      - ./scripts/inject_2fa_middleware.py:/opt/zou/scripts/inject_2fa_middleware.py:Z
+
+    # Use injection script to add 2FA middleware
+    command: >
+      sh -c "/init_zou.sh && /upgrade_zou.sh &&
+      pip3 install psycopg2-binary --quiet &&
+      if [ -f /opt/zou/scripts/check_2fa_on_startup.sh ]; then bash /opt/zou/scripts/check_2fa_on_startup.sh; fi &&
+      cd /opt/zou/scripts &&
+      gunicorn --error-logfile - --access-logfile - -w 3 -k gevent -b :5000 inject_2fa_middleware:app"
+
+  zou-event:
+    volumes:
+      # Mount enforcement script for manual checks if needed
+      - ./scripts/enforce_2fa.py:/opt/zou/scripts/enforce_2fa.py:ro
+      - ./scripts/install_dependencies.sh:/opt/zou/scripts/install_dependencies.sh:ro
+
+  zou-jobs:
+    volumes:
+      # Mount enforcement script for scheduled jobs if needed
+      - ./scripts/enforce_2fa.py:/opt/zou/scripts/enforce_2fa.py:ro
+      - ./scripts/2fa_cron_check.sh:/opt/zou/scripts/2fa_cron_check.sh:ro
+      - ./scripts/install_dependencies.sh:/opt/zou/scripts/install_dependencies.sh:ro
+
+  kitsu:
+    volumes:
+      # Mount custom nginx config to forward Authorization header and inject 2FA script
+      - ./nginx-custom.conf:/etc/nginx/nginx.conf:Z
+      # Mount custom 2FA enforcer JavaScript
+      - ./custom-2fa-enforcer.js:/opt/kitsu/dist/custom-2fa-enforcer.js:Z

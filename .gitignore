@@ -1,0 +1,16 @@
+# Environment files (user-specific)
+.env
+
+# AI-generated documentation (not needed in repo)
+CLAUDE.md
+START_HERE.md
+2FA_ENFORCEMENT.md
+QUICK_START_2FA.md
+
+# Test scripts (temporary)
+start_with_2fa.sh
+test_2fa.sh
+
+# Temporary files
+*.tmp
+/tmp/
