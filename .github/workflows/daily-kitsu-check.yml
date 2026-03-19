@@ -2,7 +2,7 @@ name: Daily Check
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -25,21 +25,19 @@ jobs:
         uses: octokit/request-action@v2.x
         id: get_latest_release
         with:
-          route: GET /repos/{owner}/{repo}/releases/latest
-          owner: cgwire
-          repo: kitsu
+          route: GET /repos/cgwire/kitsu/releases/latest
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Extract tag_name from JSON response
         run: |
           # Extract tag_name using jq and store it in an environment variable
-          export KITSU_VERSION=$(echo '${{ steps.get_latest_release.outputs.data }}' | jq -r '.tag_name')
-          
+          export KITSU_VERSION=$(jq -r '.tag_name' <<< '${{ steps.get_latest_release.outputs.data }}')
+
           if [[ ${KITSU_VERSION:0:1} == "v" ]]; then
             KITSU_VERSION=${KITSU_VERSION:1}
           fi
-          
+
           echo "KITSU_VERSION=$KITSU_VERSION" >> $GITHUB_ENV
 
           # Print the tag_name for verification
@@ -74,8 +72,10 @@ jobs:
             curl -X POST \
               -H "Authorization: Bearer ${{ secrets.PAT }}" \
               -H "Accept: application/vnd.github.everest-preview+json" \
+              -H "Content-Type: application/json" \
               https://api.github.com/repos/EmberLightVFX/Kitsu-for-Docker/dispatches \
-              --data '{"event_type": "docker-publish", "client_payload": {"KITSU_VERSION": "${{ env.KITSU_VERSION }}"}}'
+              --data '{"event_type": "docker-publish", "client_payload": {"KITSU_VERSION": "${{ env.KITSU_VERSION }}"}}' \
+              || { echo "Failed to trigger docker-publish workflow"; exit 1; }
           else
             echo "BUILD is not set to True"
           fi
