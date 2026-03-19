@@ -30,9 +30,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Extract tag_name from JSON response
+        env:
+          RELEASE_DATA: ${{ steps.get_latest_release.outputs.data }}
         run: |
           # Extract tag_name using jq and store it in an environment variable
-          export KITSU_VERSION=$(jq -r '.tag_name' <<< '${{ steps.get_latest_release.outputs.data }}')
+          export KITSU_VERSION=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
 
           if [[ ${KITSU_VERSION:0:1} == "v" ]]; then
             KITSU_VERSION=${KITSU_VERSION:1}
